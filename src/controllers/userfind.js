@@ -22,6 +22,23 @@ export default {
       res.status(400).json(error);
     }
   },
+    async update(req, res) {
+      const user = await User.findById(req.params.id);
+
+      if(!user) {
+        res.status(400).json("User does not exist!");
+      }
+
+      user.name = req.body.name || user.name
+      user.email = req.body.email || user.email
+
+      try {
+        const updateUser = await user.save()
+        res.status(201).json(updateUser)
+      } catch (error) {
+        res.status(400).json(error);
+      }
+    },
     async login(req, res) {
       const { email, password } = req.body;
       const user = await User.findOne({email});
@@ -36,8 +53,8 @@ export default {
           email: user.email,
           token: generatorToken(user._id)
         });
-      } else {
-        res.status(400).json("Invalid email or password!");
-      };
-    }
+        } else {
+          res.status(400).json("Invalid email or password!");
+        };
+   }
 }
